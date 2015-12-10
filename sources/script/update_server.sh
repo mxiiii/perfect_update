@@ -252,6 +252,9 @@ echo
 echo starte PHP neu
 service php5-fpm restart
 echo
+echo starte Mailgraph neu
+service mailgraph restart
+echo
 echo stoppe Fuglu 
 echo
 echo lade neue Fuglu Version
