@@ -28,9 +28,11 @@ Wer schon das v0.3.5 auf v0.3.8 update durchgefüht hat oder direkt eine neuinst
 
 ----------
 
-ToDo:
+### Hotfix changelog ###
 
-Script weiter automatisieren ...z.Z müssen noch ein paar änderungen per Hand vorgenommen werden.
+1. fix Message size 
+2. add Setup Relayhost
+3. fix Alias
 
 
 ----------
