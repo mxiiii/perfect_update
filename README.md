@@ -4,11 +4,11 @@
 
 Update_Patch für [https://github.com/zypr/perfectrootserver/](https://github.com/zypr/perfectrootserver/)
 
-Das Patch_File ist nur für die Version vom Perfect Root Server v0.3.5 (Nov 07, 2015) und beinhaltet die aktuellen Äderungen von Mailcow Version 13.1 bis zum Dez. 8, 2015
+Das Patch_File ist nur für die Version vom Perfect Root Server v0.3.5 (Nov 07, 2015) und beinhaltet die aktuellen Änderungen von Mailcow Version 13.1 bis zum Dez. 8, 2015
 
 Bis auf Lets Encrypt ist es ein Update vom PerfecRootServer v0.3.5 auf v0.3.8 
 
-Wer schon das v0.3.5 auf v0.3.8 update durchgefüht hat oder direkt eine neuinstallation von v0.3.8 hat, benötigt nur das Hotfix für die aktuellen Änderungen.
+Wer schon das v0.3.5 auf v0.3.8 Update durchgefüht hat oder direkt eine neuinstallation von v0.3.8 hat, benötigt nur das Hotfix für die aktuellen Änderungen.
 
 ----------
 
