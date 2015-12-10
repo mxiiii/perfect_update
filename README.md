@@ -17,7 +17,7 @@ Edit updateconfig.cfg
 bash ~/update.sh
 ```
 
-Wer schon das v0.3.5 auf v0.3.8 update durchgefüht hat oder direkt eine neuinstallation von v0.3.8 hat benötigt nur das Hotfix für die aktuellen Änderungen.
+Wer schon das v0.3.5 auf v0.3.8 update durchgefüht hat oder direkt eine neuinstallation von v0.3.8 hat, benötigt nur das Hotfix für die aktuellen Änderungen.
 
 
 ToDo: 
