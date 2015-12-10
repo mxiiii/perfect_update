@@ -44,6 +44,7 @@ install -m 640 ~/sources/update/mysql_virtual_sender_acl.cf /etc/postfix/sql/
 install -m 640 ~/sources/update/mysql_virtual_alias_maps.cf /etc/postfix/sql/ 
 install -m 755 ~/sources/update/mail.conf /etc/php5/fpm/pool.d/
 install -m 755 ~/sources/update/mc_pflog_renew /usr/local/sbin/
+install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
 cp ~/sources/update/vars.inc.php /var/www/mail/inc/
 
 echo
