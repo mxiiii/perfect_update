@@ -9,4 +9,5 @@
 # Hotfix v1.0
 #
 install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
+install -m 755 ~/sources/update/mc_msg_size /usr/local/sbin/
 cp ~/sources/update/functions.inc.php /var/www/mail/inc/ 
