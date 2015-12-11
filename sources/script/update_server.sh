@@ -177,7 +177,7 @@ chmod +x /etc/cron.daily/blocked-hosts
 
 echo "${info} ZPush Update..."
 
-mkdir /var/www/zpush/mail
+mkdir /var/www/zpush/mail >/dev/null 2>&1
 cat > /var/www/zpush/mail/config-v1.1.xml <<END
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -247,7 +247,7 @@ server {
 }
 END
 
-ln -s /etc/nginx/sites-available/mailgraph.conf /etc/nginx/sites-enabled/mailgraph.conf
+ln -s /etc/nginx/sites-available/mailgraph.conf /etc/nginx/sites-enabled/mailgraph.conf >/dev/null 2>&1
 
 
 service dovecot restart
