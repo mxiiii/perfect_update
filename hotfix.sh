@@ -205,3 +205,4 @@ return 403;
  ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf >/dev/null 2>&1
 
  service nginx restart >/dev/null 2>&1
+  service php5-fpm restart >/dev/null 2>&1
