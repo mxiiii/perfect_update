@@ -11,16 +11,16 @@
 
 IPADR=$(ifconfig eth0 | awk -F ' *|:' '/inet /{print $4}')
 
-
 source ~/updateconfig.cfg
 
 install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
 install -m 755 ~/sources/update/mc_msg_size /usr/local/sbin/
+install -m 700 ~/sources/update/mc_pflog_renew /etc/cron.daily/
 cp ~/sources/update/functions.inc.php /var/www/mail/inc/ 
 sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
 
 # Create server config
- rm -rf /etc/nginx/sites-available/${MYDOMAIN}.conf
+ rm -rf /etc/nginx/sites-available/${MYDOMAIN}.conf >/dev/null 2>&1
  cat > /etc/nginx/sites-available/${MYDOMAIN}.conf <<END
  server {
  			listen 				80 default_server;
