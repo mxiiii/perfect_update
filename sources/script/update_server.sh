@@ -1,33 +1,62 @@
 source ~/updateconfig.cfg
 
-	echo
-	echo sichere alte Dateien
-	rm /root/backup/ -r
-	mkdir -p /root/backup/fuglu
-	mkdir /root/backup/nginx
+IPADR=$(ifconfig eth0 | awk -F ' *|:' '/inet /{print $4}')
 
-	cp /var/www/mail/inc/footer.inc.php /root/backup/
-	cp /var/www/mail/inc/header.inc.php /root/backup/
-	cp /var/www/mail/inc/triggers.inc.php /root/backup/
-	cp /var/www/mail/inc/functions.inc.php /root/backup/
-	cp /var/www/mail/add.php /root/backup/
-	cp /var/www/mail/mailbox.php /root/backup/
-	cp /var/www/mail/delete.php /root//backup/
-	cp /var/www/mail/edit.php /root/backup/
-	cp /var/www/mail/admin.php /root/backup/
-	cp /etc/dovecot/dovecot.conf /root/backup/
-	cp /etc/spamassassin/local.cf /root/backup/
-	cp /etc/postfix/main.cf  /root/backup/
-	cp /etc/postfix/sql/mysql_virtual_sender_acl.cf /root/backup/
-	cp /etc/postfix/sql/mysql_virtual_alias_maps.cf /root/backup/
-	cp /etc/php5/fpm/pool.d/mail.conf /root/backup/
-	cp -R /etc/fuglu/* /root/backup/fuglu
-	cp -R /etc/nginx/* /root/backup/nginx
-	cp /usr/local/sbin/mc_pflog_renew /root/backup/
-	cp /var/www/mail/inc/vars.inc.php /root/backup/
+# Some nice colors
+red() { echo "$(tput setaf 1)$*$(tput setaf 9)"; }
+green() { echo "$(tput setaf 2)$*$(tput setaf 9)"; }
+yellow() { echo "$(tput setaf 3)$*$(tput setaf 9)"; }
+magenta() { echo "$(tput setaf 5)$*$(tput setaf 9)"; }
+cyan() { echo "$(tput setaf 6)$*$(tput setaf 9)"; }
+textb() { echo $(tput bold)${1}$(tput sgr0); }
+greenb() { echo $(tput bold)$(tput setaf 2)${1}$(tput sgr0); }
+redb() { echo $(tput bold)$(tput setaf 1)${1}$(tput sgr0); }
+yellowb() { echo $(tput bold)$(tput setaf 3)${1}$(tput sgr0); }
+pinkb() { echo $(tput bold)$(tput setaf 5)${1}$(tput sgr0); }
+
+# Some nice variables
+info="$(textb [INFO] -)"
+warn="$(yellowb [WARN] -)"
+error="$(redb [ERROR] -)"
+fyi="$(pinkb [INFO] -)"
+ok="$(greenb [OKAY] -)"
 
 echo
-echo kopiere neue Dateien
+echo "$(yellowb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+echo " $(textb Perfect) $(textb Rootserver) $(textb Update) $(textb by)" "$(cyan MXIIII)"
+echo "$(yellowb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+echo
+if [ "$CONFIG_COMPLETED" != '1' ]; then
+echo "${error} Please check the userconfig and set a valid value for the variable \"$(textb CONFIG_COMPLETED)\" to continue." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
+exit 1
+fi
+echo "${info} Backup..."
+
+rm /root/backup/ -r >/dev/null 2>&1
+mkdir -p /root/backup/fuglu >/dev/null 2>&1
+mkdir /root/backup/nginx >/dev/null 2>&1
+
+cp /var/www/mail/inc/footer.inc.php /root/backup/
+cp /var/www/mail/inc/header.inc.php /root/backup/
+cp /var/www/mail/inc/triggers.inc.php /root/backup/
+cp /var/www/mail/inc/functions.inc.php /root/backup/
+cp /var/www/mail/add.php /root/backup/
+cp /var/www/mail/mailbox.php /root/backup/
+cp /var/www/mail/delete.php /root//backup/
+cp /var/www/mail/edit.php /root/backup/
+cp /var/www/mail/admin.php /root/backup/
+cp /etc/dovecot/dovecot.conf /root/backup/
+cp /etc/spamassassin/local.cf /root/backup/
+cp /etc/postfix/main.cf  /root/backup/
+cp /etc/postfix/sql/mysql_virtual_sender_acl.cf /root/backup/ >/dev/null 2>&1
+cp /etc/postfix/sql/mysql_virtual_alias_maps.cf /root/backup/
+cp /etc/php5/fpm/pool.d/mail.conf /root/backup/
+cp -R /etc/fuglu/* /root/backup/fuglu
+cp -R /etc/nginx/* /root/backup/nginx
+cp /usr/local/sbin/mc_pflog_renew /root/backup/
+cp /var/www/mail/inc/vars.inc.php /root/backup/
+
+echo "${info} Install..."
 cp ~/sources/update/footer.inc.php /var/www/mail/inc/ 
 cp ~/sources/update/header.inc.php /var/www/mail/inc/ 
 cp ~/sources/update/triggers.inc.php /var/www/mail/inc/
@@ -48,17 +77,12 @@ install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
 install -m 755 ~/sources/update/mc_msg_size /usr/local/sbin/
 cp ~/sources/update/vars.inc.php /var/www/mail/inc/
 
-echo
-echo erzeuge neue mySQL Daten
 mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "CREATE TABLE IF NOT EXISTS alias (address varchar(255) NOT NULL, goto text NOT NULL, domain varchar(255) NOT NULL, created datetime NOT NULL DEFAULT '0000-00-00 00:00:00', modified datetime NOT NULL DEFAULT '0000-00-00 00:00:00', active tinyint(1) NOT NULL DEFAULT '1', PRIMARY KEY (address), KEY domain (domain) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
 mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "CREATE TABLE IF NOT EXISTS sender_acl (logged_in_as varchar(255) NOT NULL, send_as varchar(255) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=latin1;"
 if [[ -z $(mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "SHOW COLUMNS FROM domain LIKE 'relay_all_recipients';" -N -B) ]]; then 
 		mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "ALTER TABLE domain ADD relay_all_recipients tinyint(1) NOT NULL DEFAULT '0';" -N -B
 fi
 mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "ALTER TABLE domain MODIFY COLUMN relay_all_recipients tinyint(1) NOT NULL DEFAULT '0';"
-
-echo
-echo installiere neue Module
 
 apt-get update
 apt-get install rrdtool -y 
@@ -69,23 +93,16 @@ apt-get install spawn-fcgi -y
 apt-get install dovecot-solr -y
 apt-get install solr-jetty -y
 
-
-echo
-echo erzeuge neue Berechtigungen
 chown root:postfix "/etc/postfix/sql/mysql_virtual_sender_acl.cf"
 chown -R www-data: /var/lib/php5/sessions
 chown -R www-data: /var/www/{.,mail,dav} /var/lib/php5/sessions
 chown -R www-data: /var/www/mail/rc
 
-echo
-echo erzeuge neue cron
 [[ -f /etc/cron.daily/doverecalcq ]] && rm /etc/cron.daily/doverecalcq
 install -m 755 ~/sources/update/dovemaint /etc/cron.daily/
 install -m 644 ~/sources/update/solrmaint /etc/cron.d/
 
-# Mailcow Update
-echo
-echo Mailcow Update
+echo "${info} Mailcow Update..."
 			
 mkdir -p /var/mailcow/log
 mkdir -p /var/mailcow/tmp
@@ -129,10 +146,8 @@ location ~ \.cgi\$ {
 }
 END
 
-# Blacklist Update
-echo
-echo Blacklist Update
- sed -i 's/.*BLOCK_HOSTS_FILE=.*/BLOCK_HOSTS_FILE="\/etc\/arno-iptables-firewall\/blocked-hosts"/' /etc/arno-iptables-firewall/firewall.conf
+echo "${info} Blacklist Fix..."
+sed -i 's/.*BLOCK_HOSTS_FILE=.*/BLOCK_HOSTS_FILE="\/etc\/arno-iptables-firewall\/blocked-hosts"/' /etc/arno-iptables-firewall/firewall.conf
 cat > /etc/cron.daily/blocked-hosts <<END
 #!/bin/bash
 BLACKLIST_DIR="/root/sources/blacklist"
@@ -160,10 +175,7 @@ systemctl force-reload arno-iptables-firewall.service
 END
 chmod +x /etc/cron.daily/blocked-hosts
 
-
-#ZPush Update
-echo
-echo ZPush Update
+echo "${info} ZPush Update..."
 
 mkdir /var/www/zpush/mail
 cat > /var/www/zpush/mail/config-v1.1.xml <<END
@@ -222,9 +234,7 @@ cat > /var/www/zpush/mail/config-v1.1.xml <<END
 END
 	chown -R www-data: /var/www/zpush/mail/
 
-#mailgraph Update
-echo
-echo mailgraph Update
+echo "${info} Mailgraph Update..."
 
 cat > /etc/nginx/sites-available/mailgraph.conf <<END
 server {
@@ -239,27 +249,16 @@ END
 
 ln -s /etc/nginx/sites-available/mailgraph.conf /etc/nginx/sites-enabled/mailgraph.conf
 
-echo
-echo starte Dovecot neu
+
 service dovecot restart
-echo
-echo starte Spamassassin neu
 service spamassassin restart
-echo
-echo starte Postfix neu
 service postfix restart
-echo
-echo starte PHP neu
 service php5-fpm restart
-echo
-echo starte Mailgraph neu
 service mailgraph restart
-echo
-echo stoppe Fuglu 
-echo
-echo lade neue Fuglu Version
+echo "${info} Fuglu Update..."
+service fuglu stop
 cd ~
-wget https://github.com/gryphius/fuglu/tarball/master -O fuglu-latest.tar.gz
+wget https://github.com/gryphius/fuglu/tarball/master -O fuglu-latest.tar.gz >/dev/null 2>&1
 tar -xvzf fuglu-latest.tar.gz
 cd gryphius-fuglu-*
 cd fuglu
@@ -269,23 +268,46 @@ echo starte Fuglu
 cp -R /root/backup/fuglu/* /etc/fuglu/
 service fuglu restart
 
+clear
 echo
-echo NGINX Update
+echo "$(yellowb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+echo " $(textb Perfect) $(textb Rootserver) $(textb Update) $(textb by)" "$(cyan MXIIII)"
+echo "$(yellowb +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+)"
+echo
+echo "${info} Backup..."
+echo "${info} Install..."
+echo "${info} Mailcow Update..."
+echo "${info} Blacklist Fix..."
+echo "${info} ZPush Update..."
+echo "${info} Mailgraph Update..."
+echo "${info} Fuglu Update..."
+echo "${info} NGINX Update..."
+echo "${warn} Some of the tasks could take a long time, please be patient!"
 service nginx stop
 
 cd ~/sources
-echo "${info} Downloading Nginx Pagespeed..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-wget https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip >/dev/null 2>&1
-unzip -qq release-${NPS_VERSION}-beta.zip
+wget -nc http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz >/dev/null 2>&1
+tar -xzf openssl-${OPENSSL_VERSION}.tar.gz >/dev/null 2>&1
+echo "${info} Downloading OpenSSH..."
+wget -nc http://ftp.hostserver.de/pub/OpenBSD/OpenSSH/portable/openssh-${OPENSSH_VERSION}p1.tar.gz >/dev/null 2>&1
+tar -xzf openssh-${OPENSSH_VERSION}p1.tar.gz >/dev/null 2>&1
+cd openssh-${OPENSSH_VERSION}p1
+echo "${info} Compiling OpenSSH..."
+./configure --prefix=/usr --with-pam --with-zlib --with-ssl-engine --with-ssl-dir=/etc/ssl --sysconfdir=/etc/ssh >/dev/null 2>&1
+make >/dev/null 2>&1 && mv /etc/ssh{,.bak} && make install >/dev/null 2>&1
+systemctl -q restart ssh.service
+echo "${info} Downloading Nginx Pagespeed..."
+wget -nc https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip >/dev/null 2>&1
+unzip -qq release-${NPS_VERSION}-beta.zip 
 cd ngx_pagespeed-release-${NPS_VERSION}-beta/
-wget https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz >/dev/null 2>&1
+wget -nc https://dl.google.com/dl/page-speed/psol/${NPS_VERSION}.tar.gz >/dev/null 2>&1
 tar -xzf ${NPS_VERSION}.tar.gz
 cd ~/sources
-echo "${info} Downloading Naxsi..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-wget --no-check-certificate https://github.com/nbs-system/naxsi/archive/${NAXSI_VERSION}.tar.gz >/dev/null 2>&1
+echo "${info} Downloading Naxsi..."
+wget --no-check-certificate -nc https://github.com/nbs-system/naxsi/archive/${NAXSI_VERSION}.tar.gz >/dev/null 2>&1
 tar -xzf ${NAXSI_VERSION}.tar.gz
-echo "${info} Downloading Nginx..." | awk '{ print strftime("[%H:%M:%S] |"), $0 }'
-wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz >/dev/null 2>&1
+echo "${info} Downloading Nginx..."
+wget -nc http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz >/dev/null 2>&1
 tar -xzf nginx-${NGINX_VERSION}.tar.gz
 cd nginx-${NGINX_VERSION}
 
@@ -382,11 +404,12 @@ sed -i '732s/.*/                (void) BIO_set_write_buffer_size(wbio, 16384);/'
 --add-module=$HOME/sources/ngx_pagespeed-release-${NPS_VERSION}-beta \
 --add-module=$HOME/sources/naxsi-${NAXSI_VERSION}/naxsi_src >/dev/null 2>&1
 
-make
+echo "${info} NGINX Install..."
+make >/dev/null 2>&1
 
-checkinstall --install=no -y
+checkinstall --install=no -y >/dev/null 2>&1
 
-dpkg -i nginx_${NGINX_VERSION}-1_amd64.deb
+dpkg -i nginx_${NGINX_VERSION}-1_amd64.deb >/dev/null 2>&1
 
 mv nginx_${NGINX_VERSION}-1_amd64.deb ../
 cp -R /root/backup/nginx/* /etc/nginx/
@@ -802,3 +825,13 @@ cat > /etc/nginx/sites-available/${MYDOMAIN}.conf <<END
  }
 END
 service nginx start
+echo
+echo
+echo "${info} In the next step you have to set one DNS TXT records for your domain."
+echo
+echo
+echo " NAME       TYPE          VALUE"
+echo "-----------------------------------"
+echo "  @    TXT       \"mailconf=https://autoconfig.${MYDOMAIN}/mail/config-v1.1.xml\""
+echo
+echo
