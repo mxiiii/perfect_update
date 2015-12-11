@@ -72,6 +72,7 @@ sed -i 's/$database_host =.*/$database_host = "'${MYSQLHOST}'"/g' ~/sources/upda
 sed -i 's/$database_name.*/$database_name = "'${MYSQLDB}'"/g' ~/sources/update/vars.inc.php
 sed -i 's/$database_pass.*/$database_pass = "'${MYSQLMAILCOW}'"/g' ~/sources/update/vars.inc.php
 sed -i "s/login_greeting =.*/login_greeting = ${MYHOSTNAME}/g" ~/sources/update/dovecot.conf
+sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
 
 cp ~/sources/update/footer.inc.php /var/www/mail/inc/ 
 cp ~/sources/update/header.inc.php /var/www/mail/inc/ 
@@ -100,14 +101,14 @@ if [[ -z $(mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "SHOW COLUMN
 fi
 mysql --host localhost -u root -p${MYSQLROOT} mailcow -e "ALTER TABLE domain MODIFY COLUMN relay_all_recipients tinyint(1) NOT NULL DEFAULT '0';"
 
-apt-get update
-apt-get install rrdtool -y 
-apt-get install spawn-fcgi -y 
-apt-get install mailgraph -y
-apt-get install memcached -y
-apt-get install spawn-fcgi -y
-apt-get install dovecot-solr -y
-apt-get install solr-jetty -y
+apt-get update >/dev/null 2>&1
+apt-get install rrdtool -y >/dev/null 2>&1
+apt-get install spawn-fcgi -y >/dev/null 2>&1
+apt-get install mailgraph -y >/dev/null 2>&1
+apt-get install memcached -y >/dev/null 2>&1
+apt-get install spawn-fcgi -y >/dev/null 2>&1
+apt-get install dovecot-solr -y >/dev/null 2>&1
+apt-get install solr-jetty -y >/dev/null 2>&1
 
 chown root:postfix "/etc/postfix/sql/mysql_virtual_sender_acl.cf"
 chown -R www-data: /var/lib/php5/sessions
@@ -766,13 +767,13 @@ cat > /etc/nginx/sites-available/${MYDOMAIN}.conf <<END
  			location ~ \.php\$ {
  				fastcgi_split_path_info ^(.+\.php)(/.+)\$;
  				try_files \$fastcgi_script_name =404;
- 				set \$path_info \$fastcgi_path_info;
- 				fastcgi_param PATH_INFO \$path_info;
+ 				fastcgi_param PATH_INFO \$fastcgi_path_info;
+				fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
  				fastcgi_param APP_ENV production;
  				fastcgi_pass unix:/var/run/php5-fpm.sock;
  				fastcgi_index index.php;
  				include fastcgi.conf;
- 				fastcgi_intercept_errors on;
+ 				fastcgi_intercept_errors off;
  				fastcgi_ignore_client_abort off;
  				fastcgi_buffers 256 16k;
  				fastcgi_buffer_size 128k;
@@ -848,6 +849,6 @@ echo
 echo
 echo " NAME       TYPE          VALUE"
 echo "-----------------------------------"
-echo "  @    TXT       \"mailconf=https://autoconfig.${MYDOMAIN}/mail/config-v1.1.xml\""
+echo "  @         TXT         \"mailconf=https://autoconfig.${MYDOMAIN}/mail/config-v1.1.xml\""
 echo
 echo
