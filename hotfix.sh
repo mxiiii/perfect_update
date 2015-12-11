@@ -6,8 +6,13 @@
 # and https://github.com/andryyy/mailcow
 # Compatible with Debian 8.x (jessie)
 #
-# Hotfix v1.0
+# Hotfix v1.2
 #
+<<<<<<< HEAD
+=======
+IPADR=$(ifconfig eth0 | awk -F ' *|:' '/inet /{print $4}')
+
+>>>>>>> 755a9ec9f599fa99eeced6e5a7d8e752a530367a
 source ~/updateconfig.cfg
 
 install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
@@ -197,6 +202,15 @@ sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
              	return 403;
              }
  }
+<<<<<<< HEAD
  END
  
  ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf
+=======
+END
+ 
+ ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf >/dev/null 2>&1
+
+ service nginx restart >/dev/null 2>&1
+ 
+>>>>>>> 755a9ec9f599fa99eeced6e5a7d8e752a530367a
