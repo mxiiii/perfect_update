@@ -8,11 +8,10 @@
 #
 # Hotfix v1.2
 #
-<<<<<<< HEAD
-=======
+
 IPADR=$(ifconfig eth0 | awk -F ' *|:' '/inet /{print $4}')
 
->>>>>>> 755a9ec9f599fa99eeced6e5a7d8e752a530367a
+
 source ~/updateconfig.cfg
 
 install -m 755 ~/sources/update/mc_setup_relayhost /usr/local/sbin/
@@ -212,5 +211,3 @@ END
  ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf >/dev/null 2>&1
 
  service nginx restart >/dev/null 2>&1
- 
->>>>>>> 755a9ec9f599fa99eeced6e5a7d8e752a530367a
