@@ -294,7 +294,7 @@ tar -xzf openssh-${OPENSSH_VERSION}p1.tar.gz >/dev/null 2>&1
 cd openssh-${OPENSSH_VERSION}p1
 echo "${info} Compiling OpenSSH..."
 ./configure --prefix=/usr --with-pam --with-zlib --with-ssl-engine --with-ssl-dir=/etc/ssl --sysconfdir=/etc/ssh >/dev/null 2>&1
-make >/dev/null 2>&1 && mv /etc/ssh{,.bak} && make install >/dev/null 2>&1
+make >/dev/null 2>&1 && mv /etc/ssh{,.bak} >/dev/null 2>&1 && make install >/dev/null 2>&1
 systemctl -q restart ssh.service
 echo "${info} Downloading Nginx Pagespeed..."
 wget -nc https://github.com/pagespeed/ngx_pagespeed/archive/release-${NPS_VERSION}-beta.zip >/dev/null 2>&1
