@@ -57,6 +57,22 @@ cp /usr/local/sbin/mc_pflog_renew /root/backup/
 cp /var/www/mail/inc/vars.inc.php /root/backup/
 
 echo "${info} Install..."
+
+sed -i "s/myhostname =.*/myhostname = ${MYHOSTNAME}/g" ~/sources/update/main.cf 
+sed -i "s/user =.*/user = ${MYSQLUSER}/g" ~/sources/update/mysql_virtual_sender_acl.cf
+sed -i "s/hosts =.*/hosts = ${MYSQLHOST}/g" ~/sources/update/mysql_virtual_sender_acl.cf
+sed -i "s/dbname =.*/dbname = ${MYSQLDB}/g" ~/sources/update/mysql_virtual_sender_acl.cf
+sed -i "s/password =.*/password = ${MYSQLMAILCOW}/g" ~/sources/update/mysql_virtual_sender_acl.cf
+sed -i "s/user =.*/user = ${MYSQLUSER}/g" ~/sources/update/mysql_virtual_alias_maps.cf
+sed -i "s/hosts =.*/hosts = ${MYSQLHOST}/g" ~/sources/update/mysql_virtual_alias_maps.cf
+sed -i "s/dbname =.*/dbname = ${MYSQLDB}/g" ~/sources/update/mysql_virtual_alias_maps.cf
+sed -i "s/password =.*/password = ${MYSQLMAILCOW}/g" ~/sources/update/mysql_virtual_alias_maps.cf
+sed -i 's/$database_user =.*/$database_user = "'${MYSQLUSER}'"/g' ~/sources/update/vars.inc.php
+sed -i 's/$database_host =.*/$database_host = "'${MYSQLHOST}'"/g' ~/sources/update/vars.inc.php
+sed -i 's/$database_name.*/$database_name = "'${MYSQLDB}'"/g' ~/sources/update/vars.inc.php
+sed -i 's/$database_pass.*/$database_pass = "'${MYSQLMAILCOW}'"/g' ~/sources/update/vars.inc.php
+sed -i "s/login_greeting =.*/login_greeting = ${MYHOSTNAME}/g" ~/sources/update/dovecot.conf
+
 cp ~/sources/update/footer.inc.php /var/www/mail/inc/ 
 cp ~/sources/update/header.inc.php /var/www/mail/inc/ 
 cp ~/sources/update/triggers.inc.php /var/www/mail/inc/
