@@ -118,31 +118,29 @@ sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
  
  			auth_basic_user_file htpasswd/.htpasswd;
  
- 			location ~ \.php\$ {
- 				fastcgi_split_path_info ^(.+\.php)(/.+)\$;
-+				if (!-e \$document_root\$fastcgi_script_name) {
-+					return 404;
-+			  	}
- 				try_files \$fastcgi_script_name =404;
--				set \$path_info \$fastcgi_path_info;
--				fastcgi_param PATH_INFO \$path_info;
-+				fastcgi_param PATH_INFO \$fastcgi_path_info;
-+				fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
- 				fastcgi_param APP_ENV production;
- 				fastcgi_pass unix:/var/run/php5-fpm.sock;
- 				fastcgi_index index.php;
- 				include fastcgi.conf;
--				fastcgi_intercept_errors on;
-+				include fastcgi_params;
-+				fastcgi_intercept_errors off;
- 				fastcgi_ignore_client_abort off;
- 				fastcgi_buffers 256 16k;
- 				fastcgi_buffer_size 128k;
- 				fastcgi_connect_timeout 3s;
- 				fastcgi_send_timeout 120s;
- 				fastcgi_read_timeout 120s;
- 				fastcgi_busy_buffers_size 256k;
- 				fastcgi_temp_file_write_size 256k;
+    location ~ \.php\$ {
+ 			fastcgi_split_path_info ^(.+\.php)(/.+)\$;
+    if (!-e \$document_root\$fastcgi_script_name) {
+				return 404;
+			  }
+ 			try_files \$fastcgi_script_name =404;
+				fastcgi_param PATH_INFO \$fastcgi_path_info;
+				fastcgi_param PATH_TRANSLATED \$document_root\$fastcgi_path_info;
+ 			fastcgi_param APP_ENV production;
+ 			fastcgi_pass unix:/var/run/php5-fpm.sock;
+ 			fastcgi_index index.php;
+ 			include fastcgi.conf;
+
+				include fastcgi_params;
+				fastcgi_intercept_errors off;
+ 			fastcgi_ignore_client_abort off;
+ 			fastcgi_buffers 256 16k;
+ 			fastcgi_buffer_size 128k;
+ 			fastcgi_connect_timeout 3s;
+ 			fastcgi_send_timeout 120s;
+ 			fastcgi_read_timeout 120s;
+ 			fastcgi_busy_buffers_size 256k;
+ 			fastcgi_temp_file_write_size 256k;
  			}
  
  			include /etc/nginx/sites-custom/*.conf;
@@ -150,7 +148,7 @@ sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
  			location / {
  			   	include /etc/nginx/naxsi.rules;
  
- 			   	# Uncomment, if you need to remove index.php from the
+ 			 # Uncomment, if you need to remove index.php from the
  				# URL. Usefull if you use Codeigniter, Zendframework, etc.
  				# or just need to remove the index.php
  				#
@@ -198,16 +196,12 @@ sed -i 's/.*cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/' /etc/php5/fpm/php.ini
  			}
  
  			if (\$http_user_agent ~* "FeedDemon|JikeSpider|Indy Library|Alexa Toolbar|AskTbFXTV|AhrefsBot|CrawlDaddy|CoolpadWebkit|Java|Feedly|UniversalFeedParser|ApacheBench|Microsoft URL Control|Swiftbot|ZmEu|oBot|jaunty|Python-urllib|lightDeckReports Bot|YYSpider|DigExt|YisouSpider|HttpClient|MJ12bot|heritrix|EasouSpider|Ezooms|Scrapy") {
-             	return 403;
-             }
+return 403;
+}
  }
-<<<<<<< HEAD
+
  END
- 
- ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf
-=======
-END
- 
+
  ln -s /etc/nginx/sites-available/${MYDOMAIN}.conf /etc/nginx/sites-enabled/${MYDOMAIN}.conf >/dev/null 2>&1
 
  service nginx restart >/dev/null 2>&1
