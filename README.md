@@ -17,23 +17,24 @@ Wer schon das v0.3.5 auf v0.3.8 Update durchgefüht hat oder direkt eine neuinst
 1. `wget -O ~/perfectupdate.tar.gz https://github.com/mxiiii/perfect_update/archive/v0.x.x.tar.gz`
 2. `tar -xzf ~/perfectupdate.tar.gz -C ~/ --strip-components=1`
 3. `nano ~/updateconfig.cfg`
-5. Dateien manuell anpassen siehe unten
 4. `bash ~/update.sh`
 
 ### Hotfix für v0.3.8 ###
 
 1. `wget -O ~/perfectupdate.tar.gz https://github.com/mxiiii/perfect_update/archive/v0.x.x.tar.gz`
 2. `tar -xzf ~/perfectupdate.tar.gz -C ~/ --strip-components=1`
+3. `nano ~/updateconfig.cfg`
 4. `bash ~/hotfix.sh`
 
 ----------
 
-### Hotfix changelog ###
+### Hotfix v1.2 changelog ###
 
-1. fix Message size 
+1. fixed Message size 
 2. add Setup Relayhost
-3. fix Alias
-
+3. fixed Alias
+4. fixed fastcgi_params
+5. fixed fastcgi_path_info
 
 ----------
 
@@ -41,16 +42,6 @@ Wer schon das v0.3.5 auf v0.3.8 Update durchgefüht hat oder direkt eine neuinst
 
 Bitte alle selbstmodifizierten Dateien vorher sichern und ggf. zurückspielen. Das Update geht von einer unveränderten instalation des v0.3.5 PerfectRootserver aus !!!
 
-Vor dem Update müssen folgende Dateien noch per Hand angepasst werden:
+Nach dem Update muss ein neuer DNS TXT Record gesetzt werden:
 
-    ~/sources/update/main.cf # Zeile 96 myhostname=
-
-    ~/sources/update/mysql_virtual_sender_acl.cf # Zeile 2-5 user = / password = / hosts = / dbname
-
-    ~/sources/update/mysql_virtual_alias_maps.cf # Zeile 2-5 user = / password = / hosts = / dbname
-
-    ~/sources/update/dovecot.conf # Zeile 5 login_greeting = FQDN des Mailservers hinzufügen
-    
-    ~/sources/update/vars.inc.php # Zeile 3-6 / Login usw. für MYSQL
-
-Neuen DNS TXT Record setzen auf: mailconf=https://autoconfig.DOMAIN/mail/config-v1.1.xml 
+`mailconf=https://autoconfig.${MYDOMAIN}/mail/config-v1.1.xml`
